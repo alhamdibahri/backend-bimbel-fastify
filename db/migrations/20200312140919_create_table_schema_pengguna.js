@@ -1,0 +1,72 @@
+exports.up = function(knex) {
+    return knex.schema
+    //schema pengguna
+    .createTable('pengguna.roles', function(table){
+        table.increments('id_role')
+        table.string('role')
+    })
+    .createTable('pengguna.kategori_berita', function(table){
+        table.increments('id_kategori_berita')
+        table.string('kategori_berita')
+    })
+    .createTable('pengguna.users', function(table){
+        table.increments('id_user')
+        table.integer('role_id').unsigned()
+        table.integer('gender_id').unsigned()
+        table.integer('religion_id').unsigned()
+        table.integer('province_id').unsigned()
+        table.integer('regency_id').unsigned()
+        table.integer('district_id').unsigned()
+        table.bigint('village_id').unsigned()
+        table.string('username', 50).unique()
+        table.string('email', 50).unique()
+        table.string('password')
+        table.string('nama', 255)
+        table.string('tempat_lahir')
+        table.string('tanggal_lahir', 15)
+        table.text('alamat')
+        table.string('no_handphone', 15).unique()
+        table.string('foto').nullable()
+        table.string('uid', 50)
+        table.string('password_asli', 50)
+        table.string('status', 1)
+        table.string('baca', 1)
+        table.dateTime('created_at').nullable()
+        table.dateTime('updated_at').nullable()
+        table.foreign('role_id').references('id_role').inTable('pengguna.roles').onUpdate('cascade').onDelete('cascade')
+        table.foreign('gender_id').references('id_gender').inTable('support.genders').onUpdate('cascade').onDelete('cascade')
+        table.foreign('religion_id').references('id_religion').inTable('support.religions').onUpdate('cascade').onDelete('cascade')
+        table.foreign('province_id').references('id_province').inTable('support.provinces').onUpdate('cascade').onDelete('cascade')
+        table.foreign('regency_id').references('id_regency').inTable('support.regencies').onUpdate('cascade').onDelete('cascade')
+        table.foreign('district_id').references('id_district').inTable('support.districts').onUpdate('cascade').onDelete('cascade')
+        table.foreign('village_id').references('id_village').inTable('support.villages').onUpdate('cascade').onDelete('cascade')
+    })
+    .createTable('pengguna.berita', function(table){
+        table.increments('id_berita')
+        table.integer('kategori_berita_id').unsigned()
+        table.integer('user_id').unsigned()
+        table.string('judul_berita')
+        table.text('tanggal_berita', 15)
+        table.string('foto_berita')
+        table.text('deskripsi')
+        table.dateTime('created_at').nullable()
+        table.dateTime('updated_at').nullable()
+        table.foreign('kategori_berita_id').references('id_kategori_berita').inTable('pengguna.kategori_berita').onUpdate('cascade').onDelete('cascade')
+        table.foreign('user_id').references('id_user').inTable('pengguna.users').onUpdate('cascade').onDelete('cascade')
+    })
+    .createTable('pengguna.reset_passwords', function(table){
+        table.increments('id_reset_password')
+        table.integer('user_id').unsigned()
+        table.string('kode_verifikasi', 10)
+        table.foreign('user_id').references('id_user').inTable('pengguna.users').onUpdate('cascade').onDelete('cascade')
+    })
+};
+
+exports.down = function(knex) {
+    return knex.schema
+    .dropTable('pengguna.reset_passwords')
+    .dropTable('pengguna.berita')
+    .dropTable('pengguna.users')
+    .dropTable('pengguna.kategori_berita')
+    .dropTable('pengguna.roles')
+};
